@@ -22,6 +22,9 @@ exports.UserService = void 0;
 const response_1 = require("../utility/response");
 const userRepository_1 = require("../repository/userRepository");
 const tsyringe_1 = require("tsyringe");
+const class_transformer_1 = require("class-transformer");
+const SignupInput_1 = require("../models/dto/SignupInput");
+const error_1 = require("../utility/error");
 // Example import statement in userService.js or userHandler.js
 let UserService = class UserService {
     constructor(repository) {
@@ -30,9 +33,13 @@ let UserService = class UserService {
     // User Creation, Validation & Login
     CreateUser(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(event.body);
-            yield this.repository.createUserOperation();
-            return (0, response_1.SucessResponse)({ message: "Response from CreateUser" });
+            // console.log(event.body);
+            const input = (0, class_transformer_1.plainToClass)(SignupInput_1.SignupInput, event.body);
+            const error = yield (0, error_1.AppValidationError)(input);
+            if (error)
+                return (0, response_1.ErrorResponse)(400, error);
+            // await this.repository.createUserOperation();
+            return (0, response_1.SucessResponse)(input);
         });
     }
     UserLogin(event) {

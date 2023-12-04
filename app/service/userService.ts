@@ -2,6 +2,9 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { SucessResponse, ErrorResponse } from "../utility/response";
 import { UserRepository } from "../repository/userRepository";
 import { autoInjectable } from "tsyringe";
+import { plainToClass } from "class-transformer";
+import { SignupInput } from "../models/dto/SignupInput";
+import { AppValidationError } from "../utility/error";
 // Example import statement in userService.js or userHandler.js
 
 @autoInjectable()
@@ -13,10 +16,13 @@ export class UserService {
 
   // User Creation, Validation & Login
   async CreateUser(event: APIGatewayProxyEventV2) {
-    console.log(event.body);
-    await this.repository.createUserOperation();
+    // console.log(event.body);
+    const input = plainToClass(SignupInput, event.body);
+    const error = await AppValidationError(input);
+    if (error) return ErrorResponse(400, error);
+    // await this.repository.createUserOperation();
 
-    return SucessResponse({ message: "Response from CreateUser" });
+    return SucessResponse(input);
   }
 
   async UserLogin(event: APIGatewayProxyEventV2) {
