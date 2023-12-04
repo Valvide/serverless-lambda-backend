@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Payment = exports.Cart = exports.Profile = exports.Verify = exports.Login = exports.Signup = void 0;
 const userService_1 = require("../service/userService");
 const response_1 = require("../utility/response");
-// import middy from "@middy/core";
 const core_1 = __importDefault(require("@middy/core"));
 const http_json_body_parser_1 = __importDefault(require("@middy/http-json-body-parser"));
-// const service = container.resolve(UserService);
-const service = new userService_1.UserService();
+const tsyringe_1 = require("tsyringe");
+const service = tsyringe_1.container.resolve(userService_1.UserService);
+// const service = new UserService();
 exports.Signup = (0, core_1.default)((event) => {
     return service.CreateUser(event);
 }).use((0, http_json_body_parser_1.default)());

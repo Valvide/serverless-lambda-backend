@@ -1,19 +1,20 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { SucessResponse, ErrorResponse } from "../utility/response";
-import { UserRepository } from "app/repository/userRepository";
+import { UserRepository } from "../repository/userRepository";
 import { autoInjectable } from "tsyringe";
+// Example import statement in userService.js or userHandler.js
 
-// autoInjectable();
+@autoInjectable()
 export class UserService {
-  // repository: UserRepository;
-  // repository: UserRepository
-  constructor() {
-    // this.repository = repository;
+  repository: UserRepository;
+  constructor(repository: UserRepository) {
+    this.repository = repository;
   }
 
   // User Creation, Validation & Login
   async CreateUser(event: APIGatewayProxyEventV2) {
     console.log(event.body);
+    await this.repository.createUserOperation();
 
     return SucessResponse({ message: "Response from CreateUser" });
   }
