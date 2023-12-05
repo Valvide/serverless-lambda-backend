@@ -5,6 +5,7 @@ import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { SignupInput } from "../models/dto/SignupInput";
 import { AppValidationError } from "../utility/error";
+import { GetHashedPassword, GetSalt } from "../utility/password";
 // Example import statement in userService.js or userHandler.js
 
 @autoInjectable()
@@ -20,9 +21,19 @@ export class UserService {
     const input = plainToClass(SignupInput, event.body);
     const error = await AppValidationError(input);
     if (error) return ErrorResponse(400, error);
-    // await this.repository.createUserOperation();
 
-    return SucessResponse(input);
+    const salt = await GetSalt();
+    const hashedPassword = await GetHashedPassword(input.password, salt);
+    const data = this.repository.createAccount({
+      email: input.email,
+      password: hashedPassword,
+      phone: input.phone,
+      salt,
+      userType: "BUYER",
+    });
+    // await this.repository.createAccount();
+
+    return SucessResponse(data);
   }
 
   async UserLogin(event: APIGatewayProxyEventV2) {
