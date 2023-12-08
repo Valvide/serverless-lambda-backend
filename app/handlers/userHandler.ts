@@ -13,9 +13,9 @@ export const Signup = middy((event: APIGatewayProxyEventV2) => {
 
 // export const handler = middy().use(httpJsonBodyParser()).handler(Signup); The new Version but is not working for CommonJs export☝🏾
 
-export const Login = (event: APIGatewayProxyEventV2) => {
+export const Login = middy((event: APIGatewayProxyEventV2) => {
   return service.UserLogin(event);
-};
+}).use(httpJsonBodyParser());
 
 export const Verify = async (event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
